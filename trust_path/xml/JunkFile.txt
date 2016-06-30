@@ -1,0 +1,1 @@
+github delete's empty folders but since this is a needed directory for the script to run here's a junk file :)
