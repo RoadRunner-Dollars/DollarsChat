@@ -9,7 +9,7 @@ define('DURA_ADMIN_PASS', 'Password');
 /**
  * URL & Path
  */
-define('DURA_URL', 'http://roadrunner-forums.com/chat'); // DO NOT ADD SLASH TO END.
+define('DURA_URL', 'https://roadrunner-dollars.github.io/DollarsChat'); // DO NOT ADD SLASH TO END.
 define('DURA_PATH', dirname(__FILE__));
 
 /**
