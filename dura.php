@@ -13,7 +13,7 @@ class Dura
     public static $catalog = array();
     public static $language = null;
 
-    public static function setup()
+    public static function setup(): void
     {
         if (defined('DURA_LOADED')) {
             return;
@@ -43,7 +43,7 @@ class Dura
         define('DURA_LOADED', true);
     }
 
-    public static function execute()
+    public static function execute(): void
     {
         $controller = self::get('controller', 'default');
         $action = self::get('action', 'default');
@@ -70,7 +70,7 @@ class Dura
         unset($instance);
     }
 
-    public static function autoload($class)
+    public static function autoload(string $class): void
     {
         if (class_exists($class, false)) {
             return;
@@ -94,25 +94,19 @@ class Dura
         require $path;
     }
 
-    public static function get($name, $default = null)
+    public static function get(string $name, ?string $default = null): mixed
     {
-        $request = (isset($_GET[$name])) ? $_GET[$name] : $default;
-        if (get_magic_quotes_gpc() and !is_array($request)) {
-            $request = stripslashes($request);
-        }
-        return $request;
+        // Removed deprecated get_magic_quotes_gpc() check (removed in PHP 8.0)
+        return isset($_GET[$name]) ? $_GET[$name] : $default;
     }
 
-    public static function post($name, $default = null)
+    public static function post(string $name, ?string $default = null): mixed
     {
-        $request = (isset($_POST[$name])) ? $_POST[$name] : $default;
-        if (get_magic_quotes_gpc() and !is_array($request)) {
-            $request = stripslashes($request);
-        }
-        return $request;
+        // Removed deprecated get_magic_quotes_gpc() check (removed in PHP 8.0)
+        return isset($_POST[$name]) ? $_POST[$name] : $default;
     }
 
-    public static function putintoClassParts($str)
+    public static function putintoClassParts(string $str): string
     {
         $str = preg_replace('/[^a-z0-9_]/', '', $str);
         $str = explode('_', $str);
@@ -123,7 +117,7 @@ class Dura
         return $str;
     }
 
-    public static function putintoPathParts($str)
+    public static function putintoPathParts(string $str): string
     {
         $str = preg_replace('/[^a-zA-Z0-9]/', '', $str);
         $str = preg_replace('/([A-Z])/', '_$1', $str);
@@ -132,19 +126,20 @@ class Dura
         return $str;
     }
 
-    public static function escapeHtml($string)
+    public static function escapeHtml(string $string): string
     {
-        return htmlspecialchars($string, ENT_QUOTES);
+        // Updated with ENT_SUBSTITUTE for better security
+        return htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 
-    public static function redirect($controller = null, $action = null, $extra = array())
+    public static function redirect(?string $controller = null, ?string $action = null, array $extra = array()): void
     {
         $url = self::url($controller, $action, $extra);
         header('Location: ' . $url);
         die;
     }
 
-    public static function url($controller = null, $action = null, $extra = array())
+    public static function url(?string $controller = null, ?string $action = null, array $extra = array()): string
     {
         $params = array();
 
@@ -187,9 +182,9 @@ class Dura
         return $user;
     }
 
-    public static function getUrl()
+    public static function getUrl(): string
     {
-        if (isset($_SERVER['HTTPS']) and $_SERVER['HTTPS'] == 'on') {
+        if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
             $protocol = 'https://';
         } else {
             $protocol = 'http://';
@@ -208,7 +203,7 @@ class Dura
         return $url;
     }
 
-    public static function trans($message, $controller = null, $action = null, $extra = array())
+    public static function trans(string $message, ?string $controller = null, ?string $action = null, array $extra = array()): void
     {
         $url = self::url($controller, $action, $extra);
 
@@ -220,26 +215,24 @@ class Dura
     }
 }
 
-function t($message)
+function t(string $message, ...$args): string
 {
     if (isset(Dura::$catalog[$message])) {
         $message = Dura::$catalog[$message];
     }
 
-    if (func_num_args() == 1) {
+    if (empty($args)) {
         return $message;
     }
 
-    $params = func_get_args();
-
-    foreach ($params as $i => $param) {
+    foreach ($args as $i => $param) {
         $message = str_replace('{' . $i . '}', $param, $message);
     }
 
     return $message;
 }
 
-function e($string)
+function e(string $string): void
 {
     echo $string;
 }
