@@ -41,10 +41,8 @@ if (!isset($_GET['fast'])) {
 
         sleep(DURA_SLEEP_TIME);
 
-        if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false) // TODO
-        {
-            break;
-        }
+        // Removed outdated MSIE (Internet Explorer) browser detection
+        // Modern code should not target legacy browsers
     }
 }
 
